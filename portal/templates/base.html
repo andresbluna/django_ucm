@@ -1,0 +1,27 @@
+<!-- base.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Estudiantil UCM</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+  <header class="bg-blue-600 text-white text-center py-4 text-xl font-semibold">
+    APP UCM
+  </header>
+
+  <nav class="flex justify-around bg-white shadow p-2 text-blue-600 font-medium text-sm">
+    <a href="{% url 'notas' %}" class="hover:underline">Notas</a>
+    <a href="{% url 'calendario' %}" class="hover:underline">Calendario</a>
+    <a href="{% url 'archivos' %}" class="hover:underline">Archivos</a>
+  </nav>
+
+  <main class="p-4">
+    {% block content %}{% endblock %}
+  </main>
+
+</body>
+</html>

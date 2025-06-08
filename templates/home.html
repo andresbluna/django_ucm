@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Bienvenido a la página de inicio</h1>
+
+    <h2>Cursos obtenidos desde la API externa</h2>
+    <ul id="courses-list"></ul>
+
+    <script>
+        async function fetchCursos() {
+            const user = prompt("Ingrese usuario:");
+            const password = prompt("Ingrese contraseña:");
+
+            if (!user || !password) {
+                document.getElementById('courses-list').innerHTML = '<li>Usuario y contraseña requeridos.</li>';
+                return;
+            }
+
+            try {
+                const response = await fetch('/external-cursos/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user, password })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: No se pudieron obtener los cursos.`);
+                }
+
+                const cursos = await response.json();
+                const list = document.getElementById('courses-list');
+                list.innerHTML = '';
+
+                if (!Array.isArray(cursos) || cursos.length === 0) {
+                    list.innerHTML = '<li>No se encontraron cursos.</li>';
+                    return;
+                }
+
+                cursos.forEach(curso => {
+                    const li = document.createElement('li');
+                    li.textContent = `${curso.name} - ${curso.code || ''}`;
+                    list.appendChild(li);
+                });
+            } catch (error) {
+                console.error(error);
+                document.getElementById('courses-list').innerHTML = '<li>Error al cargar los cursos.</li>';
+            }
+        }
+
+        fetchCursos();
+    </script>
+</body>
+</html>

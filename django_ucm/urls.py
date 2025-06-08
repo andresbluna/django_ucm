@@ -14,6 +14,8 @@ urlpatterns = [
 
     # DELETE evaluación por id:
     path('evaluations/delete/<str:id>/', views.evaluation_delete, name='evaluation_delete'),
+
+    path('external-cursos/', views.external_courses_api, name='external_courses_api')
 ]
 
 

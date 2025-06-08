@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
@@ -7,38 +7,53 @@
 <body>
     <h1>Bienvenido a la página de inicio</h1>
 
-    <h2>Evaluaciones agendadas para el curso 101</h2>
-    <ul id="evaluations-list">
-
-    </ul>
+    <h2>Cursos obtenidos desde la API externa</h2>
+    <ul id="courses-list"></ul>
 
     <script>
-        async function fetchEvaluations() {
-            try {
-                const response = await fetch('/evaluations/course-101');
-                if (!response.ok) {
-                    throw new Error('Error al obtener evaluaciones');
-                }
-                const evaluations = await response.json();
-                const list = document.getElementById('evaluations-list');
+        async function fetchCursos() {
+            const user = prompt("Ingrese usuario:");
+            const password = prompt("Ingrese contraseña:");
 
-                if (evaluations.length === 0) {
-                    list.innerHTML = '<li>No hay evaluaciones agendadas.</li>';
+            if (!user || !password) {
+                document.getElementById('courses-list').innerHTML = '<li>Usuario y contraseña requeridos.</li>';
+                return;
+            }
+
+            try {
+                const response = await fetch('/external-cursos/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user, password })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: No se pudieron obtener los cursos.`);
+                }
+
+                const cursos = await response.json();
+                const list = document.getElementById('courses-list');
+                list.innerHTML = '';
+
+                if (!Array.isArray(cursos) || cursos.length === 0) {
+                    list.innerHTML = '<li>No se encontraron cursos.</li>';
                     return;
                 }
 
-                evaluations.forEach(evaluation => {
+                cursos.forEach(curso => {
                     const li = document.createElement('li');
-                    li.textContent = `${evaluation.evaluation_name} - ${new Date(evaluation.evaluation_date).toLocaleString()} - ${evaluation.description || ''}`;
+                    li.textContent = `${curso.name} - ${curso.code || ''}`;
                     list.appendChild(li);
                 });
             } catch (error) {
                 console.error(error);
-                document.getElementById('evaluations-list').innerHTML = '<li>Error al cargar las evaluaciones.</li>';
+                document.getElementById('courses-list').innerHTML = '<li>Error al cargar los cursos.</li>';
             }
         }
 
-        fetchEvaluations();
+        fetchCursos();
     </script>
 </body>
 </html>

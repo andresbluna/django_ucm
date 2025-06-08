@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Bienvenido a la página de inicio</h1>
+
+    <h2>Evaluaciones agendadas para el curso 101</h2>
+    <ul id="evaluations-list">
+
+    </ul>
+
+    <script>
+        async function fetchEvaluations() {
+            try {
+                const response = await fetch('/evaluations/course-101');
+                if (!response.ok) {
+                    throw new Error('Error al obtener evaluaciones');
+                }
+                const evaluations = await response.json();
+                const list = document.getElementById('evaluations-list');
+
+                if (evaluations.length === 0) {
+                    list.innerHTML = '<li>No hay evaluaciones agendadas.</li>';
+                    return;
+                }
+
+                evaluations.forEach(evaluation => {
+                    const li = document.createElement('li');
+                    li.textContent = `${evaluation.evaluation_name} - ${new Date(evaluation.evaluation_date).toLocaleString()} - ${evaluation.description || ''}`;
+                    list.appendChild(li);
+                });
+            } catch (error) {
+                console.error(error);
+                document.getElementById('evaluations-list').innerHTML = '<li>Error al cargar las evaluaciones.</li>';
+            }
+        }
+
+        fetchEvaluations();
+    </script>
+</body>
+</html>

@@ -16,3 +16,15 @@ class Evaluation(models.Model):
 
 
 
+class File(models.Model):
+    course_id = models.CharField(max_length=100)
+    student_id = models.CharField(max_length=100)
+    file_id = models.CharField(max_length=100)
+    filename = models.CharField(max_length=255)
+    url = models.URLField()
+    mimetype = models.CharField(max_length=100)
+    size = models.IntegerField()
+    upload_date = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.filename} ({self.course_id} - {self.student_id})"

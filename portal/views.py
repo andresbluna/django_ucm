@@ -8,6 +8,9 @@ from rest_framework.views import APIView
 from .models import Evaluation
 from .serializers import EvaluationSerializer
 from .serializers import FileSerializer
+from .models import File
+
+
 
 def home(request):
     return render(request, 'home.html')
@@ -53,4 +56,44 @@ class RegisterFileView(APIView):
     
 
 
+class FilesByCourseQueryView(APIView):
+    def get(self, request):
+        course_id = request.query_params.get('course_id')
+        if not course_id:
+            return Response({"error": "El parámetro 'course_id' es requerido."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        files = File.objects.filter(course_id=course_id)
+        serializer = FileSerializer(files, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
+class UpdateFileNameView(APIView):
+    def put(self, request, file_id):
+        try:
+            file = File.objects.get(file_id=file_id)
+        except File.DoesNotExist:
+            return Response({"error": "Archivo no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        
+        new_filename = request.data.get('filename')
+        if not new_filename:
+            return Response({"error": "El campo 'filename' es requerido."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        file.filename = new_filename
+        file.save()
+        
+        serializer = FileSerializer(file)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class DeleteFileView(APIView):
+    def delete(self, request, file_id):
+        try:
+            file = File.objects.get(file_id=file_id)
+        except File.DoesNotExist:
+            return Response({"error": "Archivo no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        
+        file.delete()
+        
+        return Response(
+            {"message": "Archivo eliminado correctamente"},
+            status=status.HTTP_200_OK
+        )

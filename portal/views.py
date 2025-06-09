@@ -44,6 +44,12 @@ class EvaluationByCourseView(APIView):
         serializer = EvaluationSerializer(evaluations, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class EvaluationDeleteById(APIView):
+    def delete(self, request, id):
+        evaluation = get_object_or_404(Evaluation, id=id)
+        evaluation.delete()
+        return Response({"message": "Evaluación eliminada correctamente"}, status=status.HTTP_200_OK)
+
 
 class RegisterFileView(APIView):
     def post(self, request):

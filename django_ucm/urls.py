@@ -14,7 +14,7 @@ urlpatterns = [
     path('files/register/', RegisterFileView.as_view(), name='register-file'),
     path('files/by-course/', FilesByCourseQueryView.as_view(), name='files-by-course-query'),
     path('files/<str:file_id>/update-filename/', UpdateFileNameView.as_view(), name='update-file-filename'),
-    path('files/<str:file_id>/delete/', DeleteFileView.as_view(), name='delete-file'),
+    path('files/<str:file_id>', DeleteFileView.as_view(), name='delete-file'),
 
 ]
 

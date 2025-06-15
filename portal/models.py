@@ -21,6 +21,7 @@ class File(models.Model):
     student_id = models.CharField(max_length=100)
     file_id = models.CharField(max_length=100)
     filename = models.CharField(max_length=255)
+    aws_id = models.CharField(max_length=100)
     url = models.URLField()
     mimetype = models.CharField(max_length=100)
     size = models.IntegerField()

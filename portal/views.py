@@ -1,4 +1,6 @@
 import uuid
+
+from django.contrib.sites import requests
 from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
@@ -94,12 +96,24 @@ class DeleteFileView(APIView):
     def delete(self, request, file_id):
         try:
             file = File.objects.get(file_id=file_id)
+            aws_id = file.aws_id
         except File.DoesNotExist:
             return Response({"error": "Archivo no encontrado."}, status=status.HTTP_404_NOT_FOUND)
-        
+
+        try:
+            response = requests.delete(
+                f"https://ms-s3-presigned-2.onrender.com/delete-file?uuid={aws_id}"
+            )
+            if response.status_code != 200:
+                return Response(
+                    {"error": "Error al eliminar el archivo en S3"},
+                    status=status.HTTP_502_BAD_GATEWAY
+                )
+        except requests.RequestException as e:
+            return Response(
+                {"error": "Fallo de conexión con el servicio de archivos", "details": str(e)},
+                status=status.HTTP_502_BAD_GATEWAY
+            )
+
         file.delete()
-        
-        return Response(
-            {"message": "Archivo eliminado correctamente"},
-            status=status.HTTP_200_OK
-        )
+        return Response({"message": "Archivo eliminado correctamente"}, status=status.HTTP_200_OK)
